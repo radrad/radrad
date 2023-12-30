@@ -1,0 +1,268 @@
+Property tools:
+--------------------------------------------
+Property
+
+Properties:
+PropertyId (Guid)
+Name (string, max length: 100)
+Address (string, max length: 200)
+Description (text, max length: 1000)
+PropertyType (enum: Apartment, House, Villa)
+Amenities (text, max length: 2000)
+OwnerId (Guid)
+Relationships:
+One-to-Many with Booking
+One-to-One with Owner
+One-to-Many with Listings
+
+Owner
+
+Properties:
+OwnerId (Guid)
+FullName (string, max length: 150)
+Email (string, max length: 100)
+PhoneNumber (string, max length: 15)
+Relationships:
+One-to-Many with Property
+One-to-Many with PaymentDetails
+One-to-One with OwnerDashboard (Version 1)
+
+
+BookingManagement tools:
+--------------------------------------------
+BookingManagement
+
+Purpose: Centralized management and oversight of all bookings within the system.
+Properties:
+ManagementId (Guid)
+PolicyDetails (text)
+TrackingInfo (text)
+AnalysisReports (text)
+Relationships:
+One-to-Many with Booking
+
+Booking
+
+Properties:
+BookingId (Guid)
+PropertyId (Guid)
+GuestId (Guid)
+CheckInDate (DateTime)
+CheckOutDate (DateTime)
+TotalPrice (decimal)
+Status (enum: Pending, Confirmed, Cancelled)
+SpecialRequests (text, max length: 500)
+Relationships:
+Many-to-One with Property
+One-to-One with Guest
+One-to-Many with Payment
+One-to-One with CustomerSupportTicket
+
+Guest
+
+Properties:
+GuestId (Guid)
+FullName (string, max length: 150)
+Email (string, max length: 100)
+ContactNumber (string, max length: 15)
+Relationships:
+One-to-Many with Booking
+
+Payment
+
+Properties:
+PaymentId (Guid)
+BookingId (Guid)
+Amount (decimal)
+PaymentDate (DateTime)
+PaymentMethod (enum: CreditCard, PayPal, BankTransfer)
+Relationships:
+Many-to-One with Booking
+
+PaymentDetails
+
+Properties:
+OwnerId (Guid)
+BankAccountNumber (string, max length: 24)
+BankName (string, max length: 100)
+SwiftCode (string, max length: 11)
+Relationships:
+Many-to-One with Owner
+
+MaintenanceRequest
+
+Properties:
+RequestId (Guid)
+PropertyId (Guid)
+IssueDescription (text, max length: 500)
+Status (enum: Reported, InProgress, Resolved)
+Relationships:
+Many-to-One with Property
+
+Feedback
+
+Properties:
+FeedbackId (Guid)
+BookingId (Guid)
+Rating (int, range: 1-5)
+Comments (text, max length: 500)
+Relationships:
+One-to-One with Booking
+
+Transaction
+
+Properties:
+TransactionId (Guid)
+OwnerId (Guid)
+Amount (decimal)
+TransactionDate (DateTime)
+TransactionType (enum: Income, Expense)
+Relationships:
+Many-to-One with Owner
+
+Property Owner tools
+--------------------------------------------
+OwnerDashboard
+
+Properties:
+DashboardId (Guid)
+OwnerId (Guid)
+OccupancyRate (decimal)
+TotalEarnings (decimal)
+AverageRating (decimal)
+Relationships:
+One-to-One with Owner
+
+Listings
+
+Properties:
+ListingId (Guid)
+PropertyId (Guid)
+AvailabilityStatus (enum: Available, Booked, Unavailable)
+PricePerNight (decimal)
+AvailableFromDate (DateTime)
+AvailableToDate (DateTime)
+Relationships:
+Many-to-One with Property
+
+
+Guest Experience tools:
+--------------------------------------------
+Guest
+
+Properties:
+GuestId (Guid)
+FullName (string, max length: 150)
+Email (string, max length: 100)
+ContactNumber (string, max length: 15)
+Relationships:
+One-to-Many with Booking
+One-to-Many with Review
+One-to-One with GuestPreferences
+One-to-Many with SearchCriteria
+
+SearchCriteria
+
+Properties:
+CriteriaId (Guid)
+GuestId (Guid)
+SearchParameters (text)
+Relationships:
+Many-to-One with Guest
+
+GuestPreferences
+
+Properties:
+PreferencesId (Guid)
+GuestId (Guid)
+PreferencesDetails (text)
+Relationships:
+One-to-One with Guest
+
+
+Feedback tools:
+--------------------------------------------
+Review
+
+Properties:
+ReviewId (Guid)
+BookingId (Guid)
+GuestId (Guid)
+Rating (int)
+Comments (text, max length: 500)
+Relationships:
+Many-to-One with Guest
+One-to-One with Booking
+
+Rating
+
+Properties:
+RatingId (Guid)
+BookingId (Guid)
+Score (int)
+Relationships:
+One-to-One with Booking
+
+
+Booking Manager Tools:
+--------------------------------------------
+BookingManagement
+
+Properties:
+ManagementId (Guid)
+BookingDetails (text)
+Relationships:
+	//No direct relationships but interacts with multiple entities like Booking, Guest, and Property.
+
+CustomerSupportTicket
+
+Properties:
+TicketId (Guid)
+IssueDescription (text)
+ResolutionStatus (enum: Open, Closed, Pending)
+Relationships:
+One-to-One with Booking
+
+
+Administrator Tools:
+--------------------------------------------
+SystemAuditLog (tracking system changes)
+
+Properties:
+LogId (Guid)
+EventDescription (text)
+EventDate (DateTime)
+Relationships:
+No direct relationships but records events across various entities.
+
+Housekeeping and Maintenance toools:
+--------------------------------------------
+TaskAssignment (task management)
+
+Properties:
+TaskId (Guid)
+PropertyId (Guid)
+Description (text)
+DueDate (DateTime)
+Relationships:
+Many-to-One with Property
+
+MaintenanceSchedule (task management)
+
+Properties:
+ScheduleId (Guid)
+PropertyId (Guid)
+MaintenanceDetails (text)
+ScheduledDate (DateTime)
+Relationships:
+Many-to-One with Property
+
+MaintenanceReport (status updates)
+
+Properties:
+ReportId (Guid)
+TaskId (Guid)
+ReportDetails (text)
+ReportDate (DateTime)
+Relationships:
+Many-to-One with TaskAssignment
