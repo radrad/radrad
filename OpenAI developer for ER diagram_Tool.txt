@@ -1,0 +1,591 @@
+I plan to build AI ER model using GPT Chat agent/bot where I can provide user prompts to get back some OpenAI structured response (like you see below: a tree like listing of some entities for a particular model AI comes up with), which can be converted to jsonModel (javascript object literal as in in entityRelationshipBookingManagement.html
+
+I came up with this sample where I am using jsonModel variable as JavaScript object literal (json like object that I can get as a payload as a string and convert it to javascript object literal)
+https://github.com/radrad/GoJS/blob/master/samples/entityRelationshipBookingManagement.html
+
+I am using abp.io suite to design entities visually: https://docs.abp.io/en/commercial/latest/abp-suite/generating-crud-page
+Once they are fully designed, they are saved formated as json files like:
+https://github.com/IsmailEsadKilic/Vehman2/blob/main/aspnet-core/.suite/entities/Vehicle.json
+Entities are usually related and from these relationships one can create ER diagrams.
+https://gojs.net/latest/samples/entityRelationship.html (
+
+I modified this example in my fork:
+https://github.com/radrad/GoJS/blob/master/samples/entityRelationshipBookingManagement.html
+which shows how we can transform json object (which we get from AI response) to a structure GoJS can use to display ER diagram
+
+Below is how I obtained structured data when talking to AI bot.
+
+<User prompt>:
+Create "Short Term Booking Rental Management model"
+and make it realistic including additional entities and properties based on some realistic industry standards to allow more options. 
+First build textual DDD model with entities and their relationships and later I want you to convert it to .json instance compliant to json schema for entity.
+
+<Chat GPT response>
+To create a realistic Domain-Driven Design (DDD) model for the Short Term Booking Rental Management industry, we'll first establish a textual representation of the model, including entities and their relationships. This industry typically deals with managing property rentals, bookings, payments, guests, and owners. Here's an enhanced textual DDD model:
+
+Model Name: Short Term Booking Rental Management with short name: BookingManagement
+
+Entities:
+
+1.	Property
+	Properties:
+		PropertyId (Guid) - Required
+		Name (string, max length: 100) - Required
+		Address (string, max length: 200) - Required
+		Description (text, max length: 1000)
+		PropertyType (enum: Apartment, House, Villa, Studio) - Required
+		OwnerId (Guid) - Required
+		Features (List of string)
+		AvailabilityStatus (enum: Available, Booked, Maintenance)
+	Relationships:
+		One-to-Many with Booking
+		One-to-One with Owner
+		One-to-Many with Review
+		One-to-Many with PropertyImage
+
+2.	Owner
+	Properties:
+		OwnerId (Guid) - Required
+		FullName (string, max length: 150) - Required
+		Email (string, max length: 100) - Required
+		PhoneNumber (string, max length: 15)
+		JoinDate (DateTime)
+	Relationships:
+		One-to-Many with Property
+		One-to-Many with PaymentDetails
+
+3.	Booking
+	Properties:
+		BookingId (Guid) - Required
+		PropertyId (Guid) - Required
+		GuestId (Guid) - Required
+		CheckInDate (DateTime) - Required
+		CheckOutDate (DateTime) - Required
+		TotalPrice (decimal) - Required
+		Status (enum: Pending, Confirmed, Cancelled) - Required
+		NumberOfGuests (int)
+	Relationships:
+		Many-to-One with Property
+		One-to-One with Guest
+		One-to-Many with Payment
+
+4.	Guest
+	Properties:
+		GuestId (Guid) - Required
+		FullName (string, max length: 150) - Required
+		Email (string, max length: 100) - Required
+		PhoneNumber (string, max length: 15)
+		Nationality (string, max length: 50)
+		DateOfBirth (DateTime)
+	Relationships:
+		One-to-Many with Booking
+
+5.	Payment
+	Properties:
+		PaymentId (Guid) - Required
+		BookingId (Guid) - Required
+		Amount (decimal) - Required
+		PaymentDate (DateTime) - Required
+		PaymentMethod (enum: CreditCard, PayPal, BankTransfer) - Required
+	Relationships:
+		Many-to-One with Booking
+
+6.	PaymentDetails
+	Properties:
+		OwnerId (Guid) - Required
+		BankAccountNumber (string, max length: 24) - Required
+		BankName (string, max length: 100)
+		SwiftCode (string, max length: 11)
+	Relationships:
+		Many-to-One with Owner
+
+7.	Review
+	Properties:
+		ReviewId (Guid) - Required
+		PropertyId (Guid) - Required
+		GuestId (Guid) - Required
+		Rating (int) - Required
+		Comments (text, max length: 1000)
+		ReviewDate (DateTime) - Required
+	Relationships:
+		Many-to-One with Property
+		Many-to-One with Guest
+
+8.	PropertyImage
+	Properties:
+		ImageId (Guid) - Required
+		PropertyId (Guid) - Required
+		ImageUrl (string, max length: 2048) - Required
+		Caption (string, max length: 200)
+	Relationships:
+		Many-to-One with Property
+
+This model covers the essential aspects of the Short Term Booking Rental Management industry, considering various realistic entities and their relationships. Next, I will convert this textual DDD model into a JSON schema compliant representation.
+
+Based on the provided JSON schema and the textual DDD model for Short Term Booking Rental Management, I'll create a JSON representation of the model that complies with the schema. This JSON representation will include definitions for entities such as Property, Owner, Booking, Guest, Payment, PaymentDetails, Review, and PropertyImage.
+
+JSON Representation of Short Term Booking Rental Management Model
+json
+Copy code
+{
+  "model": "Short Term Booking Rental Management",
+  "entities": [
+    {
+      "Name": "Property",
+      "Properties": [
+        {"Name": "PropertyId", "Type": "Guid", "IsRequired": true},
+        {"Name": "Name", "Type": "string", "MaxLength": 100, "IsRequired": true},
+        {"Name": "Address", "Type": "string", "MaxLength": 200, "IsRequired": true},
+        {"Name": "Description", "Type": "text", "MaxLength": 1000},
+        {"Name": "PropertyType", "Type": "enum", "EnumValues": ["Apartment", "House", "Villa", "Studio"], "IsRequired": true},
+        {"Name": "OwnerId", "Type": "Guid", "IsRequired": true},
+        {"Name": "Features", "Type": "List<string>"},
+        {"Name": "AvailabilityStatus", "Type": "enum", "EnumValues": ["Available", "Booked", "Maintenance"]}
+      ],
+      "NavigationProperties": [
+        {"EntityName": "Booking", "Type": "OneToMany"},
+        {"EntityName": "Owner", "Type": "OneToOne"},
+        {"EntityName": "Review", "Type": "OneToMany"},
+        {"EntityName": "PropertyImage", "Type": "OneToMany"}
+      ]
+    },
+    {
+      "Name": "Owner",
+      "Properties": [
+        {"Name": "OwnerId", "Type": "Guid", "IsRequired": true},
+        {"Name": "FullName", "Type": "string", "MaxLength": 150, "IsRequired": true},
+        {"Name": "Email", "Type": "string", "MaxLength": 100, "IsRequired": true},
+        {"Name": "PhoneNumber", "Type": "string", "MaxLength": 15},
+        {"Name": "JoinDate", "Type": "DateTime"}
+      ],
+      "NavigationProperties": [
+        {"EntityName": "Property", "Type": "OneToMany"},
+        {"EntityName": "PaymentDetails", "Type": "OneToMany"}
+      ]
+    },
+    // Other entities (Booking, Guest, Payment, PaymentDetails, Review, PropertyImage) follow the same structure
+  ]
+}
+This JSON structure follows the provided schema, defining each entity with its properties and relationships. The "Type" for each property is set according to the schema's data types, and navigation properties define the relationships between entities.
+
+If you need further modifications or additions to this model, feel free to let me know.
+
+As a entity model designer you can start completly from scratch and define your model this way:
+
+For next entities and their properties infer data types based on naming standards and industry we are modeling.
+
+Create entity product with properties name, description, quantity, status, name is required
+Add Category entity, properties name, parentcategory, numberofproducts
+Add 1-n relationhip between Category and Product
+
+
+Entity model can be validated with this json scheama
+https://github.com/radrad/radrad/blob/main/EntitySchemaAnnotated_testlangchainabpio_merged_pydantic_added_schema_version_cleaned.json
+This is visual representation of schema
+https://github.com/radrad/radrad/blob/main/DDD_Abp.io_ER_Diagram.png
+
+This is how one model can be visualized through a series of transformations:
+https://github.com/radrad/radrad/blob/main/entityRelationshipBookingManagement_removed_extra_1-1_relationships.jpg
+
+
+
+<User_Promt>:
+Create Model: Short Term Booking Rental Management with short name: BookingManagement
+
+<Chat GPT response>:
+
+Entities:
+
+1.	Property
+	Properties:
+		PropertyId (Guid) - Required
+		Name (string, max length: 100) - Required
+		Address (string, max length: 200) - Required
+		Description (text, max length: 1000)
+		PropertyType (enum: Apartment, House, Villa, Studio) - Required
+		OwnerId (Guid) - Required
+		Features (List of string)
+		AvailabilityStatus (enum: Available, Booked, Maintenance)
+	Relationships:
+		One-to-Many with Booking
+		One-to-One with Owner
+		One-to-Many with Review
+		One-to-Many with PropertyImage
+
+2.	Owner
+	Properties:
+		OwnerId (Guid) - Required
+		FullName (string, max length: 150) - Required
+		Email (string, max length: 100) - Required
+		PhoneNumber (string, max length: 15)
+		JoinDate (DateTime)
+	Relationships:
+		One-to-Many with Property
+		One-to-Many with PaymentDetails
+
+3.	Booking
+	Properties:
+		BookingId (Guid) - Required
+		PropertyId (Guid) - Required
+		GuestId (Guid) - Required
+		CheckInDate (DateTime) - Required
+		CheckOutDate (DateTime) - Required
+		TotalPrice (decimal) - Required
+		Status (enum: Pending, Confirmed, Cancelled) - Required
+		NumberOfGuests (int)
+	Relationships:
+		Many-to-One with Property
+		One-to-One with Guest
+		One-to-Many with Payment
+
+4.	Guest
+	Properties:
+		GuestId (Guid) - Required
+		FullName (string, max length: 150) - Required
+		Email (string, max length: 100) - Required
+		PhoneNumber (string, max length: 15)
+		Nationality (string, max length: 50)
+		DateOfBirth (DateTime)
+	Relationships:
+		One-to-Many with Booking
+
+5.	Payment
+	Properties:
+		PaymentId (Guid) - Required
+		BookingId (Guid) - Required
+		Amount (decimal) - Required
+		PaymentDate (DateTime) - Required
+		PaymentMethod (enum: CreditCard, PayPal, BankTransfer) - Required
+	Relationships:
+		Many-to-One with Booking
+
+6.	PaymentDetails
+	Properties:
+		OwnerId (Guid) - Required
+		BankAccountNumber (string, max length: 24) - Required
+		BankName (string, max length: 100)
+		SwiftCode (string, max length: 11)
+	Relationships:
+		Many-to-One with Owner
+
+7.	Review
+	Properties:
+		ReviewId (Guid) - Required
+		PropertyId (Guid) - Required
+		GuestId (Guid) - Required
+		Rating (int) - Required
+		Comments (text, max length: 1000)
+		ReviewDate (DateTime) - Required
+	Relationships:
+		Many-to-One with Property
+		Many-to-One with Guest
+
+8.	PropertyImage
+	Properties:
+		ImageId (Guid) - Required
+		PropertyId (Guid) - Required
+		ImageUrl (string, max length: 2048) - Required
+		Caption (string, max length: 200)
+	Relationships:
+		Many-to-One with Property
+
+
+
+<User_Prompt>:
+create jsonModel based on json schema.
+
+
+<Chat GPT response>:
+jsonModel = 
+{
+    "model": "Short Term Booking Rental Management",
+    "entities": [{
+            "Name": "Property",
+            "Properties": [{
+                    "Name": "PropertyId",
+                    "Type": "Guid",
+                    "IsRequired": true
+                }, {
+                    "Name": "Name",
+                    "Type": "string",
+                    "MaxLength": 100,
+                    "IsRequired": true
+                }, {
+                    "Name": "Address",
+                    "Type": "string",
+                    "MaxLength": 200,
+                    "IsRequired": true
+                }, {
+                    "Name": "Description",
+                    "Type": "text",
+                    "MaxLength": 1000
+                }, {
+                    "Name": "PropertyType",
+                    "Type": "enum",
+                    "EnumValues": ["Apartment", "House", "Villa", "Studio"],
+                    "IsRequired": true
+                }, {
+                    "Name": "OwnerId",
+                    "Type": "Guid",
+                    "IsRequired": true
+                }, {
+                    "Name": "Features",
+                    "Type": "List<string>"
+                }, {
+                    "Name": "AvailabilityStatus",
+                    "Type": "enum",
+                    "EnumValues": ["Available", "Booked", "Maintenance"]
+                }
+            ],
+            "NavigationProperties": [{
+                    "EntityName": "Booking",
+                    "Type": "OneToMany"
+                }, {
+                    "EntityName": "Owner",
+                    "Type": "OneToOne"
+                }, {
+                    "EntityName": "Review",
+                    "Type": "OneToMany"
+                }, {
+                    "EntityName": "PropertyImage",
+                    "Type": "OneToMany"
+                }
+            ]
+        }, {
+            "Name": "Owner",
+            "Properties": [{
+                    "Name": "OwnerId",
+                    "Type": "Guid",
+                    "IsRequired": true
+                }, {
+                    "Name": "FullName",
+                    "Type": "string",
+                    "MaxLength": 150,
+                    "IsRequired": true
+                }, {
+                    "Name": "Email",
+                    "Type": "string",
+                    "MaxLength": 100,
+                    "IsRequired": true
+                }, {
+                    "Name": "PhoneNumber",
+                    "Type": "string",
+                    "MaxLength": 15
+                }, {
+                    "Name": "JoinDate",
+                    "Type": "DateTime"
+                }
+            ],
+            "NavigationProperties": [{
+                    "EntityName": "Property",
+                    "Type": "OneToMany"
+                }, {
+                    "EntityName": "PaymentDetails",
+                    "Type": "OneToMany"
+                }
+            ]
+        }, {
+            "Name": "Booking",
+            "Properties": [{
+                    "Name": "BookingId",
+                    "Type": "Guid",
+                    "IsRequired": true
+                }, {
+                    "Name": "PropertyId",
+                    "Type": "Guid",
+                    "IsRequired": true
+                }, {
+                    "Name": "GuestId",
+                    "Type": "Guid",
+                    "IsRequired": true
+                }, {
+                    "Name": "CheckInDate",
+                    "Type": "DateTime",
+                    "IsRequired": true
+                }, {
+                    "Name": "CheckOutDate",
+                    "Type": "DateTime",
+                    "IsRequired": true
+                }, {
+                    "Name": "TotalPrice",
+                    "Type": "decimal",
+                    "IsRequired": true
+                }, {
+                    "Name": "Status",
+                    "Type": "enum",
+                    "EnumValues": ["Pending", "Confirmed", "Cancelled"],
+                    "IsRequired": true
+                }, {
+                    "Name": "NumberOfGuests",
+                    "Type": "int"
+                }
+            ],
+            "NavigationProperties": [{
+                    "EntityName": "Property",
+                    "Type": "ManyToOne"
+                }, {
+                    "EntityName": "Guest",
+                    "Type": "OneToOne"
+                }, {
+                    "EntityName": "Payment",
+                    "Type": "OneToMany"
+                }
+            ]
+        }, {
+            "Name": "Guest",
+            "Properties": [{
+                    "Name": "GuestId",
+                    "Type": "Guid",
+                    "IsRequired": true
+                }, {
+                    "Name": "FullName",
+                    "Type": "string",
+                    "MaxLength": 150,
+                    "IsRequired": true
+                }, {
+                    "Name": "Email",
+                    "Type": "string",
+                    "MaxLength": 100,
+                    "IsRequired": true
+                }, {
+                    "Name": "PhoneNumber",
+                    "Type": "string",
+                    "MaxLength": 15
+                }, {
+                    "Name": "Nationality",
+                    "Type": "string",
+                    "MaxLength": 50
+                }, {
+                    "Name": "DateOfBirth",
+                    "Type": "DateTime"
+                }
+            ],
+            "NavigationProperties": [{
+                    "EntityName": "Booking",
+                    "Type": "OneToMany"
+                }
+            ]
+        }, {
+            "Name": "Payment",
+            "Properties": [{
+                    "Name": "PaymentId",
+                    "Type": "Guid",
+                    "IsRequired": true
+                }, {
+                    "Name": "BookingId",
+                    "Type": "Guid",
+                    "IsRequired": true
+                }, {
+                    "Name": "Amount",
+                    "Type": "decimal",
+                    "IsRequired": true
+                }, {
+                    "Name": "PaymentDate",
+                    "Type": "DateTime",
+                    "IsRequired": true
+                }, {
+                    "Name": "PaymentMethod",
+                    "Type": "enum",
+                    "EnumValues": ["CreditCard", "PayPal", "BankTransfer"],
+                    "IsRequired": true
+                }
+            ],
+            "NavigationProperties": [{
+                    "EntityName": "Booking",
+                    "Type": "ManyToOne"
+                }
+            ]
+        }, {
+            "Name": "PaymentDetails",
+            "Properties": [{
+                    "Name": "OwnerId",
+                    "Type": "Guid",
+                    "IsRequired": true
+                }, {
+                    "Name": "BankAccountNumber",
+                    "Type": "string",
+                    "MaxLength": 24,
+                    "IsRequired": true
+                }, {
+                    "Name": "BankName",
+                    "Type": "string",
+                    "MaxLength": 100
+                }, {
+                    "Name": "SwiftCode",
+                    "Type": "string",
+                    "MaxLength": 11
+                }
+            ],
+            "NavigationProperties": [{
+                    "EntityName": "Owner",
+                    "Type": "ManyToOne"
+                }
+            ]
+        }, {
+            "Name": "Review",
+            "Properties": [{
+                    "Name": "ReviewId",
+                    "Type": "Guid",
+                    "IsRequired": true
+                }, {
+                    "Name": "PropertyId",
+                    "Type": "Guid",
+                    "IsRequired": true
+                }, {
+                    "Name": "GuestId",
+                    "Type": "Guid",
+                    "IsRequired": true
+                }, {
+                    "Name": "Rating",
+                    "Type": "int",
+                    "IsRequired": true
+                }, {
+                    "Name": "Comments",
+                    "Type": "text",
+                    "MaxLength": 1000
+                }, {
+                    "Name": "ReviewDate",
+                    "Type": "DateTime",
+                    "IsRequired": true
+                }
+            ],
+            "NavigationProperties": [{
+                    "EntityName": "Property",
+                    "Type": "ManyToOne"
+                }, {
+                    "EntityName": "Guest",
+                    "Type": "ManyToOne"
+                }
+            ]
+        }, {
+            "Name": "PropertyImage",
+            "Properties": [{
+                    "Name": "ImageId",
+                    "Type": "Guid",
+                    "IsRequired": true
+                }, {
+                    "Name": "PropertyId",
+                    "Type": "Guid",
+                    "IsRequired": true
+                }, {
+                    "Name": "ImageUrl",
+                    "Type": "string",
+                    "MaxLength": 2048,
+                    "IsRequired": true
+                }, {
+                    "Name": "Caption",
+                    "Type": "string",
+                    "MaxLength": 200
+                }
+            ],
+            "NavigationProperties": [{
+                    "EntityName": "Property",
+                    "Type": "ManyToOne"
+                }
+            ]
+        }
+    ]
+}
+
+This is a pretty good examply of using Python and Pydantic library to extract pydantic type based on its schema.
+https://github.com/rharris115/langchain_demos/blob/master/Part%20I%20-%20PydanticOutputParser%20and%20LLMChain.ipynb
