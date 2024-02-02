@@ -1,0 +1,156 @@
+erDiagram
+    Customer ||--o{ Order : "places"
+    Customer ||--o{ SupportTicket : "opens"
+    Customer ||--|{ Feedback : "provides"
+    Customer ||--o{ SegmentCriteria : "included_in"
+    Customer ||--o{ ProductRecommendation : "receives"
+    Customer {
+        string name
+        string email
+    }
+    Order ||--|{ OrderItem : "contains"
+    Order ||--o{ Tracking : "tracked_by"
+    Order {
+        datetime date
+        string status
+        string trackingNumber
+        string orderHistory
+    }
+    OrderItem {
+        string productName
+        int quantity
+    }
+    Tracking {
+        string trackingNumber
+        string courier
+        string currentStatus
+        datetime estimatedDeliveryDate
+    }
+    SupportTicket ||--o{ Response : "receives"
+    SupportTicket {
+        int ticketID
+        string issue
+        datetime reportedDate
+        bool resolved
+    }
+    Response {
+        datetime date
+        string message
+        bool resolution
+    }
+    SalesRep ||--o{ Quote : "creates"
+    SalesRep ||--o{ Lead : "assigned"
+    SalesRep ||--o{ FollowUp : "manages"
+    SalesRep ||--o{ Campaign : "responsible_for"
+    SalesRep {
+        string name
+        string email
+    }
+    Lead ||--o{ FollowUp : "has"
+    Lead {
+        string companyName
+        string contactInfo
+        datetime startDate
+    }
+    FollowUp {
+        datetime scheduledDate
+        string activityDetails
+        bool completed
+    }
+    Quote ||--|{ QuoteItem : "consists_of"
+    Quote {
+        float totalPrice
+        string quoteDetails
+        datetime dateCreated
+    }
+    QuoteItem {
+        string productName
+        int quantity
+        float price
+    }
+    Feedback {
+        string content
+        float rating
+        datetime dateGiven
+    }
+    Campaign ||--o{ Segment : "tailored_for"
+    Campaign ||--o{ CampaignAnalytics : "evaluated_by"
+    Campaign ||--|{ LandingPage : "utilizes"
+    Campaign ||--o{ ProductRecommendation : "suggests"
+    Campaign {
+        string campaignDetails
+        string campaignType
+        datetime startDate
+        datetime endDate
+        string goals
+        string targetCustomerProfile
+        float budget
+    }
+    CampaignAnalytics {
+        string campaignName
+        float conversionRate
+        int leadsGenerated
+        float ROI
+        datetime dateReported
+    }
+    LandingPage {
+        string campaignName
+        float conversionRate
+        string URL
+        datetime dateLaunched
+    }
+    MarketingManager ||--o{ Campaign : "conducts"
+    MarketingManager {
+        string name
+        string email
+    }
+    MarketingAnalyst ||--o{ CustomerBehavior : "analyzes"
+    MarketingAnalyst ||--|{ SegmentAnalytics : "reviews"
+    MarketingAnalyst {
+        string name
+        string email
+    }
+    CustomerBehavior {
+        string reportType
+        datetime date
+        string insights
+    }
+    SalesManager ||--|{ SalesData : "views"
+    SalesManager ||--o{ Lead : "allocates"
+    SalesManager {
+        string name
+        string email
+    }
+    SalesData {
+        datetime reportDate
+        float performanceMetric
+        string insights
+    }
+    KnowledgeBase ||--o{ CommonIssue : "covers"
+    KnowledgeBase ||--o{ SupportTicket : "assists"
+    CommonIssue {
+        string issueTitle
+        string solutionDetails
+        datetime lastUpdated
+    }
+    Segment ||--o{ ProductRecommendation : "suggested_for"
+    Segment ||--|{ SegmentCriteria : "defined_by"
+    Segment ||--|{ SegmentAnalytics : "analyzed_by"
+    Segment {
+        string description
+        datetime createdAt
+        datetime updatedAt
+    }
+    SegmentCriteria {
+        string criteriaDetails
+    }
+    SegmentAnalytics {
+        float conversionRate
+        float engagementMetric
+        datetime reportDate
+    }
+    ProductRecommendation {
+        string productName
+        string recommendationDetails
+        datetime dateGenerated
+    }
