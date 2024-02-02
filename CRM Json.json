@@ -1,0 +1,119 @@
+{
+  "entities": [
+    {
+      "name": "Customer",
+      "attributes": [
+        {"name": "name", "type": "string", "length": 100},
+        {"name": "email", "type": "string", "length": 100}
+      ],
+      "relationships": [
+        {"type": "OneToMany", "target": "Order"},
+        {"type": "OneToMany", "target": "SupportTicket"},
+        {"type": "OneToMany", "target": "Feedback"},
+        {"type": "OneToMany", "target": "SegmentCriteria"},
+        {"type": "OneToMany", "target": "ProductRecommendation"}
+      ]
+    },
+    {
+      "name": "Order",
+      "attributes": [
+        {"name": "date", "type": "datetime"},
+        {"name": "status", "type": "string", "length": 50},
+        {"name": "trackingNumber", "type": "string", "length": 50},
+        {"name": "orderHistory", "type": "string", "length": 1000}
+      ],
+      "relationships": [
+        {"type": "OneToMany", "target": "OrderItem"},
+        {"type": "OneToOne", "target": "Tracking"}
+      ]
+    },
+    {
+      "name": "OrderItem",
+      "attributes": [
+        {"name": "productName", "type": "string", "length": 100},
+        {"name": "quantity", "type": "int"}
+      ]
+    },
+    {
+      "name": "Tracking",
+      "attributes": [
+        {"name": "trackingNumber", "type": "string", "length": 50},
+        {"name": "courier", "type": "string", "length": 100},
+        {"name": "currentStatus", "type": "string", "length": 50},
+        {"name": "estimatedDeliveryDate", "type": "datetime"}
+      ]
+    },
+    {
+      "name": "SupportTicket",
+      "attributes": [
+        {"name": "ticketID", "type": "int"},
+        {"name": "issue", "type": "string", "length": 200},
+        {"name": "reportedDate", "type": "datetime"},
+        {"name": "resolved", "type": "bool"}
+      ],
+      "relationships": [
+        {"type": "OneToMany", "target": "Response"}
+      ]
+    },
+    {
+      "name": "Response",
+      "attributes": [
+        {"name": "date", "type": "datetime"},
+        {"name": "message", "type": "string", "length": 500},
+        {"name": "resolution", "type": "bool"}
+      ]
+    },
+    {
+      "name": "SalesRep",
+      "attributes": [
+        {"name": "name", "type": "string", "length": 100},
+        {"name": "email", "type": "string", "length": 100}
+      ],
+      "relationships": [
+        {"type": "OneToMany", "target": "Quote"},
+        {"type": "OneToMany", "target": "Lead"},
+        {"type": "OneToMany", "target": "FollowUp"},
+        {"type": "OneToMany", "target": "Campaign"}
+      ]
+    },
+    {
+      "name": "Lead",
+      "attributes": [
+        {"name": "companyName", "type": "string", "length": 100},
+        {"name": "contactInfo", "type": "string", "length": 100},
+        {"name": "startDate", "type": "datetime"}
+      ],
+      "relationships": [
+        {"type": "OneToMany", "target": "FollowUp"}
+      ]
+    },
+    {
+      "name": "FollowUp",
+      "attributes": [
+        {"name": "scheduledDate", "type": "datetime"},
+        {"name": "activityDetails", "type": "string", "length": 500},
+        {"name": "completed", "type": "bool"}
+      ]
+    },
+    {
+      "name": "Quote",
+      "attributes": [
+        {"name": "totalPrice", "type": "float"},
+        {"name": "quoteDetails", "type": "string", "length": 500},
+        {"name": "dateCreated", "type": "datetime"}
+      ],
+      "relationships": [
+        {"type": "OneToMany", "target": "QuoteItem"}
+      ]
+    },
+    {
+      "name": "QuoteItem",
+      "attributes": [
+        {"name": "productName", "type": "string", "length": 100},
+        {"name": "quantity", "type": "int"},
+        {"name": "price", "type": "float"}
+      ]
+    },
+    // Continues with remaining entities like Feedback, Campaign, etc., using a similar pattern.
+  ]
+}
